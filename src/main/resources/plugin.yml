@@ -8,3 +8,6 @@
     spawn:
       description: permet de ce téléporter au spawn
       usage: /spawn
+    teleport:
+      description: ouvre le menu de teleport
+      usage: /teleport

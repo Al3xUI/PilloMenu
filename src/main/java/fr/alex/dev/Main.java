@@ -14,11 +14,9 @@ public class Main extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        Bukkit.getPluginManager().registerEvents(this, this);
-    }
+        this.getCommand("teleport").setExecutor(new teleport(this));
 
-    @Override
-    public void onDisable() {
+        getServer().getPluginManager().registerEvents(this, this);
     }
 
     // Commande setspawn
@@ -47,4 +45,5 @@ public class Main extends JavaPlugin implements Listener {
         }
         return false;
     }
+
 }
