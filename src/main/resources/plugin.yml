@@ -1,3 +1,10 @@
   name: PilloMenu
   main: fr.alex.dev.Main
   version: 0.1
+  commands:
+    setspawn:
+      description: permet de définir un point de spawn
+      usage: /setspawn
+    spawn:
+      description: permet de ce téléporter au spawn
+      usage: /spawn

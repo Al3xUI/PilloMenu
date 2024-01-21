@@ -1,64 +1,50 @@
 package fr.alex.dev;
 
-import net.minecraft.server.v1_8_R3.ItemMapEmpty;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.entity.HumanEntity;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.Arrays;
-
 public class Main extends JavaPlugin implements Listener {
-    private final Inventory inv;
 
-    public Main(){
-        inv = Bukkit.createInventory(null, 9, "Exemple");
-        initializeItems();
+    @Override
+    public void onEnable() {
+        Bukkit.getPluginManager().registerEvents(this, this);
     }
 
-    public void initializeItems(){
-        inv.addItem(CreateGuiItem(Material.GOLD_BLOCK, "Teleportation 1", "Description"));
-        inv.addItem(CreateGuiItem(Material.DIAMOND_BLOCK, "Teleportation 2", "description"));
+    @Override
+    public void onDisable() {
     }
 
-    protected ItemStack CreateGuiItem(final Material material, final String Name, final String Lore) {
-        final ItemStack item = new ItemStack(material, 1);
-        final ItemMeta meta = item.getItemMeta();
-
-        meta.setDisplayName(Name);
-        item.setItemMeta((ItemMeta) Arrays.asList(Lore));
-        return item;
-    }
-
-    public void openInventory(final HumanEntity ent) {
-        ent.openInventory(inv);
-    }
-    @EventHandler
-    public void openInventory(final InventoryClickEvent e) {
-        if (!e.getInventory().equals(inv)) return;
-
-        e.setCancelled(true);
-
-        final ItemStack clieckedItem = e.getCurrentItem();
-
-        if (clieckedItem== null || clieckedItem.getType().isBlock()) return;
-
-        final Player p = (Player) e.getWhoClicked();
-
-        p.sendMessage("You clicked");
-    }
-
-    @EventHandler
-    public void onInventoryClick(final InventoryClickEvent e){
-        if (e.getInventory().equals(inv)){
-            e.setCancelled(true);
+    // Commande setspawn
+    @Override
+    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        if (cmd.getName().equalsIgnoreCase("setspawn") && sender instanceof Player) {
+            Player player = (Player) sender;
+            Location location = player.getLocation();
+            World world = player.getWorld();
+            getConfig().set("spawn.world", world.getName());
+            getConfig().set("spawn.x", location.getX());
+            getConfig().set("spawn.y", location.getY());
+            getConfig().set("spawn.z", location.getZ());
+            saveConfig();
+            player.sendMessage(ChatColor.GREEN + "Spawn défini avec succès");
+            return true;
+        } else if (cmd.getName().equalsIgnoreCase("spawn") && sender instanceof Player) {
+            Player player = (Player) sender;
+            World world = Bukkit.getWorld(getConfig().getString("spawn.world"));
+            double x = getConfig().getDouble("spawn.x");
+            double y = getConfig().getDouble("spawn.y");
+            double z = getConfig().getDouble("spawn.z");
+            Location spawnLocation = new Location(world, x, y, z);
+            player.teleport(spawnLocation);
+            player.sendMessage(ChatColor.GREEN + "Vous avez été téléporté au spawn !");
         }
+        return false;
     }
 }
